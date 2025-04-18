@@ -9,7 +9,6 @@ class ReferralHistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // bottomNavigationBar: _buildBottomNavBar(),
       body: SafeArea(
         child: Column(
           children: [
