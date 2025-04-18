@@ -1,0 +1,1 @@
+// Define your app-wide strings here
