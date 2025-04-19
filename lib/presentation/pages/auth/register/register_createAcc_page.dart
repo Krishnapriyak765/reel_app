@@ -1,16 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:winngoo_reels_app/presentation/pages/auth/login/login_page.dart';
-import 'package:winngoo_reels_app/presentation/pages/auth/register/register_personalifo_page.dart';
+import 'package:go_router/go_router.dart';
 
 class CreateAccountPage extends StatefulWidget {
   @override
-  _CreateAccountPageState createState() => _CreateAccountPageState();
+  State<CreateAccountPage> createState() => _CreateAccountPageState();
 }
 
 class _CreateAccountPageState extends State<CreateAccountPage> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _agree = false;
+
+  // final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  final TextEditingController referralController = TextEditingController();
+
+  final GlobalKey<FormState> key = GlobalKey<FormState>();
+
+  // Step 1: Create a data model or simple object to hold signup data
+  final signupData = {'name': '', 'email': '', 'pass': '', 'referral_code': ''};
+
+  // Step 2: Function to handle next button press
+  void onNextPressed() {
+    if (key.currentState!.validate() && _agree) {
+      // signupData['name'] = nameController.text.trim();
+      signupData['email'] = emailController.text.trim();
+      signupData['pass'] = passwordController.text.trim();
+      signupData['referral_code'] = referralController.text.trim();
+
+      // Navigate to PersonalInfoForm and pass signup data
+
+      context.pushNamed('RegPersonalInfo');
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (_) => PersonalInfoForm(signupData: signupData),
+      //   ),
+      // );
+    } else if (!_agree) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Please agree to the terms.")));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +57,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           elevation: 0,
         ),
         body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Form(
+            key: key,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -41,33 +77,100 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   style: TextStyle(color: Colors.grey[700]),
                 ),
                 SizedBox(height: 30),
-                buildTextField("Name", 'Winngoo'),
-                buildTextField("Email", 'Winngooconsultancy.in'),
-                buildPasswordField(
-                  "Password",
-                  'SS@12344',
-                  _obscurePassword,
-                  () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
+
+                // Name
+                TextFormField(
+                  // controller: nameController,
+                  decoration: _inputDecoration("Name", "Winngoo"),
+                  validator:
+                      (value) => value!.isEmpty ? "Name cannot be empty" : null,
+                ),
+                SizedBox(height: 16),
+
+                // Email
+                TextFormField(
+                  controller: emailController,
+                  decoration: _inputDecoration("Email", "winngoo@example.com"),
+                  validator: (value) {
+                    if (value!.isEmpty) return "Email cannot be empty";
+                    if (!value.contains("@")) return "Enter valid email";
+                    return null;
                   },
                 ),
+                SizedBox(height: 16),
+
+                // Password
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: _inputDecoration("Password", "********").copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed:
+                          () => setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          }),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value!.length < 8)
+                      return "Use 8+ characters for password";
+                    return null;
+                  },
+                ),
+                SizedBox(height: 8),
                 Text(
                   'Use 8+ characters with a mix of letters, numbers & symbols (!@#%)',
                   style: TextStyle(color: Colors.red, fontSize: 12),
                 ),
-                buildPasswordField(
-                  "Confirm Password",
-                  '**********',
-                  _obscureConfirm,
-                  () {
-                    setState(() {
-                      _obscureConfirm = !_obscureConfirm;
-                    });
+                SizedBox(height: 16),
+
+                // Confirm Password
+                TextFormField(
+                  controller: confirmPasswordController,
+                  obscureText: _obscureConfirm,
+                  decoration: _inputDecoration(
+                    "Confirm Password",
+                    "********",
+                  ).copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed:
+                          () => setState(() {
+                            _obscureConfirm = !_obscureConfirm;
+                          }),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value != passwordController.text)
+                      return "Passwords do not match";
+                    return null;
                   },
                 ),
-                buildTextField("Referral Code", 'Winngooreels-799739'),
+                SizedBox(height: 16),
+
+                // Referral Code
+                TextFormField(
+                  controller: referralController,
+                  decoration: _inputDecoration(
+                    "Referral Code",
+                    "Winngooreels-799739",
+                  ),
+                  validator: (value) {
+                    return null; // Optional field
+                  },
+                ),
+                SizedBox(height: 16),
+
+                // Terms checkbox
                 Row(
                   children: [
                     Checkbox(
@@ -96,28 +199,18 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   ],
                 ),
                 SizedBox(height: 20),
+
+                // Next Button
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
+                      backgroundColor: Color(0xff2b21f3),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      // shape: BoxBorder(),
-                      // minimumSize: const Size(double.infinity, 48),
-                      backgroundColor: Color(0xff2b21f3),
                     ),
-                    onPressed: () {
-                      // if (_formKey.currentState!.validate()) {
-                      // TODO: Add login logic (API call or local check)
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PersonalInfoForm(),
-                        ),
-                      );
-                      // }
-                    },
+                    onPressed: onNextPressed,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 99,
@@ -130,17 +223,20 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     ),
                   ),
                 ),
+
                 SizedBox(height: 20),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text('Already have an Account ? '),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
+                        context.pushNamed('login');
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => LoginPage()),
+                        // );
                       },
                       child: const Text(
                         "  Sign in",
@@ -161,71 +257,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     );
   }
 
-  Widget buildTextField(String title, String hint) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: 10),
-          TextFormField(
-            decoration: InputDecoration(
-              // labelText: label,
-              hintText: hint,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildPasswordField(
-    String title,
-    String hint,
-    bool obscure,
-    VoidCallback toggleVisibility,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: 10),
-          TextFormField(
-            obscureText: obscure,
-            decoration: InputDecoration(
-              // labelText: label,
-              hintText: hint,
-              suffixIcon: IconButton(
-                icon: Icon(obscure ? Icons.visibility : Icons.visibility_off),
-                onPressed: toggleVisibility,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ],
-      ),
+  InputDecoration _inputDecoration(String label, String hint) {
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
     );
   }
 }

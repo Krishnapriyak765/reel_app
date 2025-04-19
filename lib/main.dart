@@ -1,8 +1,6 @@
 // Entry point
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:winngoo_reels_app/config/routes/app_routes.dart';
-import 'package:winngoo_reels_app/presentation/pages/auth/register/provider.dart';
 
 var screenWidth;
 var screenHeight;

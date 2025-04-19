@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:winngoo_reels_app/presentation/pages/auth/password/forgot_password.dart';
-import 'package:winngoo_reels_app/presentation/pages/auth/register/provider.dart';
 import 'package:winngoo_reels_app/presentation/pages/auth/register/register_createAcc_page.dart';
 import 'package:winngoo_reels_app/presentation/pages/dashboard/home/profile_screen.dart';
 
@@ -31,9 +30,33 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  String email = '';
+  String password = '';
+  bool rememberMe = false;
+  bool isPasswordVisible = false;
+
+  void updateEmail(String value) {
+    email = value;
+    // notifyListeners();
+  }
+
+  void updatePassword(String value) {
+    password = value;
+    // notifyListeners();
+  }
+
+  void toggleRememberMe(bool value) {
+    rememberMe = value;
+    // notifyListeners();
+  }
+
+  void togglePasswordVisibility() {
+    isPasswordVisible = !isPasswordVisible;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final loginProvider = Provider.of<LoginProvider>(context);
+    // final loginProvider = Provider.of<LoginProvider>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -137,10 +160,10 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   children: [
                     Checkbox(
-                      value: loginProvider.rememberMe,
+                      value: rememberMe,
                       onChanged: (value) {
                         if (value != null) {
-                          loginProvider.toggleRememberMe(value);
+                          toggleRememberMe(value);
                         }
                       },
                     ),
@@ -172,12 +195,14 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       // if (_formKey.currentState!.validate()) {
                       // TODO: Add login logic (API call or local check)
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MembershipInfoPage(),
-                        ),
-                      );
+
+                      context.pushNamed('homewithnav');
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => MembershipInfoPage(),
+                      //   ),
+                      // );
                       // }
                     },
                     child: Padding(
@@ -199,12 +224,13 @@ class _LoginPageState extends State<LoginPage> {
                     const Text("Don’t have an Account? "),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreateAccountPage(),
-                          ),
-                        );
+                        context.pushNamed('register');
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => CreateAccountPage(),
+                        //   ),
+                        // );
                       },
                       child: const Text(
                         "  Sign up",

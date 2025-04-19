@@ -34,7 +34,10 @@ class _DancingImagePageState extends State<DancingImagePage>
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _animation.value), // Translate vertically
-          child: Image.asset('assets/page${widget.val}.png', height: 250),
+          child: Image.asset(
+            'assets/images/page${widget.val}.png',
+            height: 250,
+          ),
         );
       },
     );

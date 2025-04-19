@@ -150,16 +150,16 @@ class ReferralHistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNavBar() {
-    return BottomNavigationBar(
-      backgroundColor: Appcolors.primaryBlue,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.white.withOpacity(0.6),
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.upload), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
-      ],
-    );
-  }
+  // Widget _buildBottomNavBar() {
+  //   return BottomNavigationBar(
+  //     backgroundColor: Appcolors.primaryBlue,
+  //     selectedItemColor: Colors.white,
+  //     unselectedItemColor: Colors.white.withOpacity(0.6),
+  //     items: const [
+  //       BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
+  //       BottomNavigationBarItem(icon: Icon(Icons.upload), label: ''),
+  //       BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
+  //     ],
+  //   );
+  // }
 }

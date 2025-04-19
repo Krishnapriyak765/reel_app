@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:winngoo_reels_app/presentation/pages/auth/login/login_page.dart';
-import 'package:winngoo_reels_app/presentation/pages/auth/register/register_createAcc_page.dart';
-import 'package:winngoo_reels_app/presentation/pages/competition/competition_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:winngoo_reels_app/presentation/widgets/image_animation.dart';
 
 class ReelFunPage extends StatelessWidget {
@@ -51,12 +49,13 @@ class ReelFunPage extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CompetitionPage(),
-                        ),
-                      );
+                      context.pushNamed('CompetitionPage');
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => CompetitionPage(),
+                      //   ),
+                      // );
                     },
                     child: Text("About the Competition"),
                     style: ElevatedButton.styleFrom(
@@ -71,12 +70,14 @@ class ReelFunPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   OutlinedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreateAccountPage(),
-                        ),
-                      );
+                      context.pushNamed('register');
+
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => CreateAccountPage(),
+                      //   ),
+                      // );
                     },
                     child: Text("Register"),
                     style: OutlinedButton.styleFrom(
@@ -91,10 +92,11 @@ class ReelFunPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   OutlinedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
+                      context.pushNamed('login');
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => LoginPage()),
+                      // );
                     },
                     child: Text("Login"),
                     style: OutlinedButton.styleFrom(

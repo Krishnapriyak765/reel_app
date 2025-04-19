@@ -1,8 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:winngoo_reels_app/presentation/pages/auth/register/animation.dart';
+import 'package:go_router/go_router.dart';
+import 'package:winngoo_reels_app/presentation/pages/auth/register/register_personalifo_page.dart';
 
-class PaymentDetailsPage extends StatelessWidget {
+class PaymentDetailsPage extends StatefulWidget {
+  @override
+  State<PaymentDetailsPage> createState() => _PaymentDetailsPageState();
+}
+
+class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   final _formKey = GlobalKey<FormState>();
+
+  // final _holderNameController = TextEditingController();
+  final _cardNumberController = TextEditingController();
+  // final _expiryController = TextEditingController();
+  final _cvvController = TextEditingController();
+
+  final signupData = {
+    // 'name': '',
+    'stripe_token': '',
+    // 'password': '',
+    'total_amount': '',
+  };
+
+  // Step 2: Function to handle next button press
+  void onNextPressed() {
+    if (_formKey.currentState!.validate()) {
+      // signupData['cardHolderName'] = _holderNameController.text.trim();
+      signupData['stripe_token'] = _cardNumberController.text.trim();
+      // signupData['empiry'] = _expiryController.text.trim();
+      signupData['total_amount'] = _cvvController.text.trim();
+
+      // Navigate to PersonalInfoForm and pass signup data
+
+      context.pushNamed('login');
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (_) => PersonalInfoForm(signupData: signupData),
+      //   ),
+      // );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please fill in all fields correctly.")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +60,9 @@ class PaymentDetailsPage extends StatelessWidget {
           ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            onPressed: () {}, // Handle back
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
           backgroundColor: Colors.white,
           elevation: 0,
@@ -34,7 +78,7 @@ class PaymentDetailsPage extends StatelessWidget {
                 children: [
                   buildInfoRow('Business Type', 'Winngoo reels competition'),
                   buildDivider(),
-                  buildInfoRow('Currency', 'GPB'),
+                  buildInfoRow('Currency', 'GBP'),
                   buildDivider(),
                   buildInfoRow(
                     'Order Descriptions',
@@ -57,33 +101,80 @@ class PaymentDetailsPage extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                   SizedBox(height: 10),
-                  buildTextField(
-                    label: 'A/c Holder Name',
-                    hint: 'Enter holder name',
-                    isRequired: true,
+
+                  // --- Native TextFormFields Below ---
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: TextFormField(
+                      // controller: _holderNameController,
+                      decoration: InputDecoration(
+                        labelText: 'A/c Holder Name *',
+                        hintText: 'Enter holder name',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Required' : null,
+                    ),
                   ),
-                  buildTextField(
-                    label: 'Card Number',
-                    hint: 'XXXX XXXX XXXX',
-                    isRequired: true,
-                    keyboardType: TextInputType.number,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: TextFormField(
+                      controller: _cardNumberController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Card Number *',
+                        hintText: 'XXXX XXXX XXXX',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Required';
+                        if (value.length != 16) return 'Invalid card number';
+                        return null;
+                      },
+                    ),
                   ),
                   Row(
                     children: [
                       Expanded(
-                        child: buildTextField(
-                          label: 'Valid Thru',
-                          hint: 'MM/YY',
-                          isRequired: true,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            // controller: _expiryController,
+                            decoration: InputDecoration(
+                              labelText: 'Valid Thru *',
+                              hintText: 'MM/YY',
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) return 'Required';
+                              if (!RegExp(
+                                r"^(0[1-9]|1[0-2])\/\d{2}$",
+                              ).hasMatch(value)) {
+                                return 'Invalid expiry date';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
                       ),
                       SizedBox(width: 16),
                       Expanded(
-                        child: buildTextField(
-                          label: 'CVV',
-                          hint: 'CVV',
-                          isRequired: true,
-                          obscureText: true,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextFormField(
+                            controller: _cvvController,
+                            obscureText: true,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'CVV *',
+                              hintText: 'CVV',
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) return 'Required';
+                              if (value.length != 3) return 'Invalid CVV';
+                              return null;
+                            },
+                          ),
                         ),
                       ),
                     ],
@@ -96,20 +187,10 @@ class PaymentDetailsPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        // shape: BoxBorder(),
-                        // minimumSize: const Size(double.infinity, 48),
                         backgroundColor: Color(0xff2b21f3),
                       ),
                       onPressed: () {
-                        // if (_formKey.currentState!.validate()) {
-                        // TODO: Add login logic (API call or local check)
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Animationscreen(),
-                          ),
-                        );
-                        // }
+                        onNextPressed(); // Call onNextPressed method here
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -161,27 +242,4 @@ class PaymentDetailsPage extends StatelessWidget {
   }
 
   Widget buildDivider() => Divider(thickness: 1, height: 24);
-
-  Widget buildTextField({
-    required String label,
-    required String hint,
-    bool isRequired = false,
-    bool obscureText = false,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        validator:
-            isRequired ? (value) => value!.isEmpty ? 'Required' : null : null,
-        decoration: InputDecoration(
-          labelText: label + (isRequired ? ' *' : ''),
-          hintText: hint,
-          border: OutlineInputBorder(),
-        ),
-      ),
-    );
-  }
 }
