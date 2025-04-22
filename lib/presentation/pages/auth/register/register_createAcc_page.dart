@@ -1,5 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:winngoo_reels_app/core/services/privacy_policy.dart';
+import 'package:winngoo_reels_app/presentation/pages/auth/login/login_page.dart';
+import 'package:winngoo_reels_app/presentation/pages/auth/register/register_personalifo_page.dart';
 
 class CreateAccountPage extends StatefulWidget {
   @override
@@ -11,7 +14,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   bool _obscureConfirm = true;
   bool _agree = false;
 
-  // final TextEditingController nameController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -20,30 +23,31 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   final GlobalKey<FormState> key = GlobalKey<FormState>();
 
-  // Step 1: Create a data model or simple object to hold signup data
-  final signupData = {'name': '', 'email': '', 'pass': '', 'referral_code': ''};
+  final Map<String, dynamic> signupData = {
+    'email': '',
+    'pass': '',
+    'referral_code': '',
+  };
 
-  // Step 2: Function to handle next button press
   void onNextPressed() {
-    if (key.currentState!.validate() && _agree) {
-      // signupData['name'] = nameController.text.trim();
+    if (key.currentState!.validate()) {
+      if (!_agree) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Please agree to the terms.")));
+        return;
+      }
+
       signupData['email'] = emailController.text.trim();
       signupData['pass'] = passwordController.text.trim();
       signupData['referral_code'] = referralController.text.trim();
-
-      // Navigate to PersonalInfoForm and pass signup data
-
-      context.pushNamed('RegPersonalInfo');
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (_) => PersonalInfoForm(signupData: signupData),
-      //   ),
-      // );
-    } else if (!_agree) {
-      ScaffoldMessenger.of(
+      print(signupData);
+      Navigator.push(
         context,
-      ).showSnackBar(SnackBar(content: Text("Please agree to the terms.")));
+        MaterialPageRoute(
+          builder: (_) => PersonalInfoForm(signupData: signupData),
+        ),
+      );
     }
   }
 
@@ -77,29 +81,23 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   style: TextStyle(color: Colors.grey[700]),
                 ),
                 SizedBox(height: 30),
-
-                // Name
                 TextFormField(
-                  // controller: nameController,
+                  controller: nameController,
                   decoration: _inputDecoration("Name", "Winngoo"),
                   validator:
                       (value) => value!.isEmpty ? "Name cannot be empty" : null,
                 ),
                 SizedBox(height: 16),
-
-                // Email
                 TextFormField(
                   controller: emailController,
                   decoration: _inputDecoration("Email", "winngoo@example.com"),
                   validator: (value) {
                     if (value!.isEmpty) return "Email cannot be empty";
-                    if (!value.contains("@")) return "Enter valid email";
+                    if (!value.contains("@")) return "Enter a valid email";
                     return null;
                   },
                 ),
                 SizedBox(height: 16),
-
-                // Password
                 TextFormField(
                   controller: passwordController,
                   obscureText: _obscurePassword,
@@ -117,8 +115,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value!.length < 8)
+                    if (value == null || value.length < 8) {
                       return "Use 8+ characters for password";
+                    }
                     return null;
                   },
                 ),
@@ -128,8 +127,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   style: TextStyle(color: Colors.red, fontSize: 12),
                 ),
                 SizedBox(height: 16),
-
-                // Confirm Password
                 TextFormField(
                   controller: confirmPasswordController,
                   obscureText: _obscureConfirm,
@@ -150,27 +147,21 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value != passwordController.text)
+                    if (value != passwordController.text) {
                       return "Passwords do not match";
+                    }
                     return null;
                   },
                 ),
                 SizedBox(height: 16),
-
-                // Referral Code
                 TextFormField(
                   controller: referralController,
                   decoration: _inputDecoration(
                     "Referral Code",
                     "Winngooreels-799739",
                   ),
-                  validator: (value) {
-                    return null; // Optional field
-                  },
                 ),
                 SizedBox(height: 16),
-
-                // Terms checkbox
                 Row(
                   children: [
                     Checkbox(
@@ -186,11 +177,21 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                             TextSpan(
                               text: 'Terms & Conditions',
                               style: TextStyle(color: Colors.blue),
+                              recognizer:
+                                  TapGestureRecognizer()
+                                    ..onTap = () {
+                                      fetchTermsConditions();
+                                    },
                             ),
                             TextSpan(text: ' and '),
                             TextSpan(
                               text: 'Privacy Policy',
                               style: TextStyle(color: Colors.blue),
+                              recognizer:
+                                  TapGestureRecognizer()
+                                    ..onTap = () {
+                                      fetchPrivacyPolicy();
+                                    },
                             ),
                           ],
                         ),
@@ -199,8 +200,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   ],
                 ),
                 SizedBox(height: 20),
-
-                // Next Button
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
@@ -223,20 +222,17 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     ),
                   ),
                 ),
-
                 SizedBox(height: 20),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already have an Account ? '),
+                    const Text('Already have an Account? '),
                     GestureDetector(
                       onTap: () {
-                        context.pushNamed('login');
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => LoginPage()),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
                       },
                       child: const Text(
                         "  Sign in",

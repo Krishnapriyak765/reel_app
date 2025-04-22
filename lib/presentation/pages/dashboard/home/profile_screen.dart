@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:winngoo_reels_app/core/constants/app_colors.dart';
+import 'package:winngoo_reels_app/presentation/widgets/appbar.dart';
 
 class MembershipInfoPage extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class _MembershipInfoPageState extends State<MembershipInfoPage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
+        // appBar: AppbarT(title: ' ', ontap: () {}),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           child: Column(
@@ -74,10 +77,10 @@ class _MembershipInfoPageState extends State<MembershipInfoPage> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Membership details are fixed. For updates, email us at info@winngoofame.co.uk.',
-                        style: TextStyle(fontSize: 17, color: Colors.white),
+                        style: TextStyle(fontSize: 17, color: Appcolors.white),
                       ),
                     ),
                   ],

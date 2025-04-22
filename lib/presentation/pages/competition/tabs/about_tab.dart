@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:winngoo_reels_app/main.dart';
 import 'package:winngoo_reels_app/presentation/widgets/tab_floating_buttons.dart';
 import 'package:winngoo_reels_app/presentation/widgets/theme_list_title.dart';
 
@@ -17,34 +16,22 @@ class AboutTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      padding: const EdgeInsets.all(12.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // TabHeaderBanner(
-          //   imagePath: 'assets/images/Mobile_banner_about.png',
-          //   startDate: '2025-04-24',
-          //   endDate: '2025-04-30',
-          // ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "📢 Winngoo Reel Competition – Show Your Creativity & Win!",
-                ),
-                SizedBox(height: 8),
-                Text("Love making reels? This is your chance! ... 🎉"),
-                SizedBox(height: 12),
-                Text(
-                  "📌 Pick a Theme & Get Creative!",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                ...themes.map((theme) => ThemeListTile(title: theme)).toList(),
-              ],
-            ),
+          Text("📢 Winngoo Reel Competition – Show Your Creativity & Win!"),
+          SizedBox(height: 8),
+          Text("Love making reels? This is your chance! ... 🎉"),
+          SizedBox(height: 12),
+          Text(
+            "📌 Pick a Theme & Get Creative!",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          Container(height: screenHeight * 0.03, child: TabFloatingButtons()),
+          SizedBox(height: 8),
+          ...themes.map((theme) => ThemeListTile(title: theme)).toList(),
+          SizedBox(height: 20),
+          TabFloatingButtons(), // ✅ This is where the buttons show
         ],
       ),
     );

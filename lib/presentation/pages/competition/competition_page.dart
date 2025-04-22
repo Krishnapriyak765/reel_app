@@ -4,6 +4,7 @@ import 'package:winngoo_reels_app/core/constants/app_colors.dart';
 import 'package:winngoo_reels_app/main.dart';
 import 'package:winngoo_reels_app/presentation/pages/competition/tabs/about_tab.dart';
 import 'package:winngoo_reels_app/presentation/pages/competition/tabs/demo_videos.dart';
+import 'package:winngoo_reels_app/presentation/pages/competition/tabs/rules_guidelines_tab.dart';
 import 'package:winngoo_reels_app/presentation/widgets/CarouselSlider.dart';
 
 class CompetitionPage extends StatelessWidget {
@@ -78,7 +79,7 @@ class CompetitionPage extends StatelessWidget {
                 children: [
                   AboutTab(),
                   DemoVideosTab(),
-                  // RulesGuidelinesTab(),
+                  RulesAndGuidelinesTab(),
                 ],
               ),
             ),
