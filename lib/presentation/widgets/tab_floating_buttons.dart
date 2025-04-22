@@ -109,7 +109,7 @@ class TabFloatingButtons extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 12, right: 12, bottom: 20),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
@@ -140,10 +140,11 @@ class TabFloatingButtons extends StatelessWidget {
               // TODO: Implement Enter Now
             },
             style: ElevatedButton.styleFrom(
-              minimumSize: const Size(120, 100),
+              minimumSize: const Size(140, 50),
+              maximumSize: const Size(140, 50),
               backgroundColor: Appcolors.primaryColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
             child: Text(
@@ -152,6 +153,7 @@ class TabFloatingButtons extends StatelessWidget {
               style: GoogleFonts.inter(color: Appcolors.white),
             ),
           ),
+          const SizedBox(width: 12),
         ],
       ),
     );

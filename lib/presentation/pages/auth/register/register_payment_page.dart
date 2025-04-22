@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
-import 'package:winngoo_reels_app/presentation/pages/auth/login/login_page.dart';
 
 class PaymentDetailsPage extends StatefulWidget {
   final Map<String, dynamic> newsignupData;
@@ -24,52 +24,67 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 
   bool isLoading = false;
 
-  Future<void> onNextPressed() async {
-    if (!_formKey.currentState!.validate()) return;
-    // print(calldata);
-    final signuprecord = widget.newsignupData;
-    print(signuprecord);
-
-    setState(() => isLoading = true);
-
-    final url = Uri.parse('https://winngooreels.wimbgo.com/api/register');
-    final headers = {'Content-Type': 'application/json'};
-
-    final body = jsonEncode({
-      "fname": signuprecord['fname'],
-      "lname": signuprecord['lname'],
-      "email": signuprecord['email'],
-      "phone": signuprecord['phone'],
-      "age": signuprecord['age'],
-      "profession": signuprecord['profession'],
-      "residential_city": signuprecord['residential_city'],
-      "residential_country": signuprecord['residential_country'],
-      "pass": signuprecord['pass'],
-      "referral_code": signuprecord['referral_code'],
-      "stripe_token": "tok_visa",
-      "total_amount": 15.0,
-    });
-    print(body);
+  Future<void> handlePayment() async {
     try {
-      final response = await http.post(url, headers: headers, body: body);
-      final responseData = jsonDecode(response.body);
+      setState(() => isLoading = true);
 
-      setState(() => isLoading = false);
+      // 1. Create billing details from user data
+      final billingDetails = BillingDetails(
+        name:
+            "${widget.newsignupData['fname']} ${widget.newsignupData['lname']}",
+        email: widget.newsignupData['email'],
+        phone: widget.newsignupData['phone'],
+      );
+      print(billingDetails);
+      // 2. Collect card details and create a secure PaymentMethod token
+      final paymentMethod = await Stripe.instance.createPaymentMethod(
+        params: PaymentMethodParams.card(
+          paymentMethodData: PaymentMethodData(
+            billingDetails: BillingDetails(
+              name:
+                  "${widget.newsignupData['fname']} ${widget.newsignupData['lname']}",
+              email: widget.newsignupData['email'],
+              phone: widget.newsignupData['phone'],
+            ),
+          ),
+        ),
+      );
 
-      if (response.statusCode == 201 && responseData['success'] == true) {
-        print('Signup successful: $responseData');
+      // 3. Prepare the payload with Stripe token (secure!)
+      final requestBody = {
+        "fname": widget.newsignupData['fname'],
+        "lname": widget.newsignupData['lname'],
+        "email": widget.newsignupData['email'],
+        "phone": widget.newsignupData['phone'],
+        "age": widget.newsignupData['age'],
+        "profession": widget.newsignupData['profession'],
+        "residential_city": widget.newsignupData['residential_city'],
+        "residential_country": widget.newsignupData['residential_country'],
+        "pass": widget.newsignupData['pass'],
+        "referral_code": widget.newsignupData['referral_code'],
+        "stripe_token": paymentMethod.id, // ✅ SECURE
+        "total_amount": 15.00,
+      };
+      print(requestBody);
+      // 4. Send to backend
+      final response = await http.post(
+        Uri.parse('https://winngooreels.wimbgo.com/api/register'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody),
+      );
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => LoginPage()),
-        );
+      if (response.statusCode == 201) {
+        print(response.statusCode);
+        showSuccessDialog("Payment successful & registration completed!");
       } else {
-        showErrorDialog(responseData['message'] ?? 'Registration failed.');
+        showErrorDialog("Payment failed: ${response.body}");
+        print(Error());
       }
     } catch (e) {
+      print("$e");
+      showErrorDialog("Payment error: $e");
+    } finally {
       setState(() => isLoading = false);
-      showErrorDialog("An error occurred. Please check your internet.");
-      print('Error: $e');
     }
   }
 
@@ -79,6 +94,23 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
       builder:
           (_) => AlertDialog(
             title: Text("Error"),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("OK"),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: Text("Success"),
             content: Text(message),
             actions: [
               TextButton(
@@ -154,8 +186,15 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
                       hint: 'XXXX XXXX XXXX XXXX',
                       keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value!.isEmpty) return 'Required';
-                        if (value.length < 16) return 'Invalid card number';
+                        if (value == null || value.isEmpty) return 'Required';
+
+                        // Regex: exactly 4 groups of 4 digits separated by space
+                        final cardRegex = RegExp(r'^\d{4} \d{4} \d{4} \d{4}$');
+
+                        if (!cardRegex.hasMatch(value)) {
+                          return 'Enter a valid card number (xxxx xxxx xxxx xxxx)';
+                        }
+
                         return null;
                       },
                     ),
@@ -204,7 +243,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: isLoading ? null : onNextPressed,
+                        onPressed: isLoading ? null : handlePayment,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 99,

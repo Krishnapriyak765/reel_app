@@ -7,18 +7,6 @@ var screenHeight;
 
 void main() => runApp(MyApp());
 
-// void main() {
-//   runApp(
-//     ChangeNotifierProvider(
-//       create: (_) => LoginProvider(),
-//       child: MaterialApp.router(
-//         routerConfig: router,
-//         debugShowCheckedModeBanner: false,
-//       ),
-//     ),
-//   );
-// }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -29,6 +17,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp.router(
       routerConfig: router,
+
       debugShowCheckedModeBanner: false,
     );
   }

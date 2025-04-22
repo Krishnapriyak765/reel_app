@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:winngoo_reels_app/core/constants/app_colors.dart';
-import 'package:winngoo_reels_app/presentation/widgets/appbar.dart';
 
 class MembershipInfoPage extends StatefulWidget {
   @override

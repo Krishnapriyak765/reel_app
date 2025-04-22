@@ -8,7 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:winngoo_reels_app/core/constants/app_colors.dart';
 import 'package:winngoo_reels_app/main.dart';
-import 'package:winngoo_reels_app/presentation/widgets/review_diologue.dart';
+import 'package:winngoo_reels_app/presentation/widgets/logout_dialog.dart';
+import 'package:winngoo_reels_app/presentation/widgets/review_dialog.dart';
 import 'package:winngoo_reels_app/presentation/widgets/upload_sucessMessage.dart';
 
 class UploadVideoScreen extends StatefulWidget {
@@ -124,7 +125,6 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
               height: screenHeight * 0.27,
               decoration: BoxDecoration(
                 color: Colors.grey[200],
-                border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(12),
               ),
               child:
@@ -353,64 +353,88 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
     }
   }
 
-  void showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.blueAccent), // Outer border
-            ),
-            title: Center(
-              child: Text(
-                'Logout',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Are sure you want to logout', style: GoogleFonts.inter()),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        foregroundColor: Colors.blue,
-                        side: BorderSide(color: Colors.blue),
-                      ),
-                      child: Text('Cancel', style: GoogleFonts.inter()),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.goNamed(
-                          'login',
-                        ) // Update this route as per your app
-                        ;
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: Color(0xFF193A84), // Deep blue button
-                      ),
-                      child: Text(
-                        'Logout',
-                        style: GoogleFonts.inter(color: Appcolors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-    );
+  Future<bool> logoutUser(String token) async {
+    final url = Uri.parse("https://winngooreels.wimbgo.com/api/user/logout");
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('Logout failed: ${response.statusCode} - ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error during logout: $e');
+      return false;
+    }
   }
+
+  // void showLogoutDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder:
+  //         (context) => AlertDialog(
+  //           shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(12),
+  //             side: BorderSide(color: Colors.blueAccent), // Outer border
+  //           ),
+  //           title: Center(
+  //             child: Text(
+  //               'Logout',
+  //               style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+  //             ),
+  //           ),
+  //           content: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               Text('Are sure you want to logout', style: GoogleFonts.inter()),
+  //               const SizedBox(height: 20),
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //                 children: [
+  //                   OutlinedButton(
+  //                     onPressed: () => Navigator.pop(context),
+  //                     style: OutlinedButton.styleFrom(
+  //                       shape: RoundedRectangleBorder(
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                       foregroundColor: Colors.blue,
+  //                       side: BorderSide(color: Colors.blue),
+  //                     ),
+  //                     child: Text('Cancel', style: GoogleFonts.inter()),
+  //                   ),
+  //                   ElevatedButton(
+  //                     onPressed: () {
+  //                       context.goNamed(
+  //                         'login',
+  //                       ) // Update this route as per your app
+  //                       ;
+  //                     },
+  //                     style: ElevatedButton.styleFrom(
+  //                       shape: RoundedRectangleBorder(
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                       backgroundColor: Color(0xFF193A84), // Deep blue button
+  //                     ),
+  //                     child: Text(
+  //                       'Logout',
+  //                       style: GoogleFonts.inter(color: Appcolors.white),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //   );
+  // }
 }
