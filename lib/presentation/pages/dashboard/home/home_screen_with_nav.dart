@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:winngoo_reels_app/core/constants/app_colors.dart';
+import 'package:winngoo_reels_app/main.dart';
 import 'package:winngoo_reels_app/presentation/pages/dashboard/home/profile_screen.dart';
 import 'package:winngoo_reels_app/presentation/pages/dashboard/home/refferal_screen.dart';
-import 'package:winngoo_reels_app/presentation/pages/dashboard/home/upload_video_page.dart';
+import 'package:winngoo_reels_app/presentation/pages/dashboard/home/upload_video.dart';
 
 class HomeScreenWithNav extends StatefulWidget {
   const HomeScreenWithNav({Key? key}) : super(key: key);
@@ -15,40 +16,71 @@ class _HomeScreenWithNavState extends State<HomeScreenWithNav> {
   int currentIndex = 1;
 
   final List<Widget> _screens = [
-    ReferralHistoryPage(), // Home page or Discover page
-    UploadVideoPage(), //Home
-    MembershipInfoPage(), // Profile page
+    MembershipInfoPage(), // Profile
+    UploadVideoScreen(), // Upload
+    ReferralHistoryPage(), // Referral
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-        backgroundColor: Appcolors.primaryBlue,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white.withOpacity(0.6),
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Home",
+      body: Stack(
+        children: [
+          _screens[currentIndex],
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: screenHeight * 0.08,
+              margin: const EdgeInsets.only(top: 16),
+              // padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+              decoration: BoxDecoration(
+                color: Appcolors.primaryColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(42),
+                  topRight: Radius.circular(42),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(0, "assets/icons/profile.png"),
+                  _buildNavItem(1, "assets/icons/upload.png"),
+                  _buildNavItem(2, "assets/icons/history.png"),
+                ],
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.file_upload_rounded, size: 30),
-            label: "Upload",
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, String assetPath) {
+    final isSelected = currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          currentIndex = index;
+        });
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            assetPath,
+            height: 28,
+            color: isSelected ? Appcolors.white : Colors.white.withOpacity(0.5),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profile",
-          ),
+          if (isSelected)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 6,
+              width: 4,
+              decoration: BoxDecoration(
+                color: Appcolors.white,
+                shape: BoxShape.circle,
+              ),
+            ),
         ],
       ),
     );
